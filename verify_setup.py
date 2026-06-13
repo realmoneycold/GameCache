@@ -8,7 +8,8 @@ def test_config():
         print("✓ Config loaded successfully!")
         print(f"  - DATABASE_URL: {settings.DATABASE_URL}")
         print(f"  - REDIS_URL: {settings.REDIS_URL}")
-        print(f"  - WHOLESALE_API_TOKEN is set: {'Yes' if settings.WHOLESALE_API_TOKEN else 'No'}")
+        print(f"  - WHOLESALE_API_CLIENT_ID is set: {'Yes' if settings.WHOLESALE_API_CLIENT_ID else 'No'}")
+        print(f"  - WHOLESALE_API_CLIENT_SECRET is set: {'Yes' if settings.WHOLESALE_API_CLIENT_SECRET else 'No'}")
         print(f"  - INTERNAL_API_SECRET_TOKEN is set: {'Yes' if settings.INTERNAL_API_SECRET_TOKEN else 'No'}")
         return True
     except Exception as e:

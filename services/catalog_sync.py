@@ -47,7 +47,17 @@ async def _sync_catalog() -> int:
                         api_product_id = str(item["productId"])
                         title = str(item.get("name", "Unknown Product"))
                         platform = str(item.get("platform", "Unknown"))
-                        price = Decimal(str(item.get("price", "0.00")))
+                        # Extract price: check prices list first, then fallback to top-level price
+                        prices = item.get("prices", [])
+                        if prices and isinstance(prices, list):
+                            price = Decimal(str(prices[0].get("value", "0.00")))
+                        else:
+                            price = Decimal(str(item.get("price", "0.00")))
+
+                        # Handle values that overflow Numeric(10, 2)
+                        if price >= Decimal("100000000.00"):
+                            print(f"[CatalogSync] ⚠ Skipping product {api_product_id} with excessively high price: {price}")
+                            continue
 
                         supplier_product_ids.append(api_product_id)
 
