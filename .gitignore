@@ -1,0 +1,30 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Configuration and Secrets
+.env
+.env.prod
+.env.local
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Log files
+logs/
+*.log
+
+# IDE and system files
+.idea/
+.vscode/
+.DS_Store

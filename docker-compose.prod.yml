@@ -1,0 +1,100 @@
+# ============================================================
+# GameHub — Production Docker Compose Mesh
+# ============================================================
+# Usage:
+#   docker compose -f docker-compose.prod.yml up -d --build
+#   docker compose -f docker-compose.prod.yml logs -f
+#   docker compose -f docker-compose.prod.yml down
+# ============================================================
+
+services:
+  # ---- PostgreSQL 16 ----
+  postgres:
+    image: postgres:16-alpine
+    container_name: gamehub-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gamehub
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - db_backups:/backups
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gamehub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - gamehub_network
+
+  # ---- Redis (Alpine) ----
+  redis:
+    image: redis:alpine
+    container_name: gamehub-redis
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - gamehub_network
+
+  # ---- GameHub Application (FastAPI + Aiogram Bot) ----
+  gamehub_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gamehub-app
+    env_file:
+      - .env.prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8080/health')\""]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - gamehub_network
+
+  # ---- Caddy Reverse Proxy ----
+  caddy:
+    image: caddy:2-alpine
+    container_name: gamehub-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      gamehub_app:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - gamehub_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  db_backups:
+  caddy_data:
+  caddy_config:
+
+networks:
+  gamehub_network:
+    driver: bridge

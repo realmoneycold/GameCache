@@ -1,0 +1,45 @@
+# ============================================================
+# GameHub — Caddy Reverse Proxy Configuration
+# ============================================================
+#
+# PRODUCTION DEPLOYMENT:
+#   Replace ":80" below with your real domain, e.g.:
+#     gamehub.example.com {
+#   Caddy will then auto-provision Let's Encrypt SSL on ports 80/443.
+#
+# LOCAL / STAGING (current):
+#   Listens on port 80 only, no TLS.
+# ============================================================
+
+{$DOMAIN:api.gamehub.uz} {
+	# ---- Security Headers ----
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer-when-downgrade"
+		X-XSS-Protection "1; mode=block"
+		-Server
+	}
+
+	# ---- API Gateway ----
+	# Forward webhook & API traffic to the internal FastAPI container
+	handle /api/* {
+		reverse_proxy gamehub_app:8080
+	}
+
+	# ---- Health Endpoint ----
+	handle /health {
+		reverse_proxy gamehub_app:8080
+	}
+
+	# ---- Catch-all: reject everything else ----
+	handle {
+		respond "GameHub API Gateway" 200
+	}
+
+	# ---- Access Logging ----
+	log {
+		output stdout
+		format console
+	}
+}
