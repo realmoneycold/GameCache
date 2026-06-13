@@ -54,7 +54,7 @@ class Order(Base):
     exact_amount_uzs: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     tiyin_suffix: Mapped[int] = mapped_column(nullable=False)
     status: Mapped[OrderStatus] = mapped_column(
-        SQLEnum(OrderStatus, name="order_status_enum", create_type=True),
+        SQLEnum(OrderStatus, name="order_status_enum", create_type=True, values_callable=lambda x: [e.value for e in x]),
         default=OrderStatus.PENDING,
         server_default=text("'pending'"),
         nullable=False
