@@ -86,6 +86,9 @@ async def lifespan(app: FastAPI):
             logging.error("Failed to send bot startup notification: %s", e)
             
         print("[Lifespan] Starting Telegram Bot polling...")
+        # Clear any stale webhook/polling sessions to prevent TelegramConflictError
+        # when Render deploys a new instance while the old one is still shutting down
+        await bot.delete_webhook(drop_pending_updates=True)
         polling_task = asyncio.create_task(dp.start_polling(bot))
         
         yield
