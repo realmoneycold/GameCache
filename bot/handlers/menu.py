@@ -95,8 +95,6 @@ def format_dashboard(user_mention: str, telegram_id: int, total_orders: int, tot
         f"📦 Total Orders:    <b>{total_orders} Completed</b>\n"
         f"💰 Total Invested:  <b>{invested_display} UZS</b>\n"
         f"🔑 Keys Claimed:    <b>{total_orders} Digital Assets</b>\n\n"
-        "🔥 PROMO CODE ACTIVE: <code>[GAMEHUB2026]</code>\n"
-        "You are currently saving 2% on all JIT wholesale catalog orders!\n"
         "─────────────────────────\n"
         "👇 Select an action from the control console below:"
     )
