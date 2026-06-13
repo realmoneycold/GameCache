@@ -8,7 +8,27 @@ DATABASE_URL = settings.DATABASE_URL if settings else "postgresql+asyncpg://post
 
 # Auto-detect if PostgreSQL is online; fallback to SQLite if offline
 import socket
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
+
+# Parse and clean URL for PostgreSQL dialect connection compatibility (e.g. asyncpg ssl)
+connect_args = {}
+if DATABASE_URL.startswith("postgresql"):
+    try:
+        parsed = urlparse(DATABASE_URL)
+        if "sslmode=require" in parsed.query or "neon.tech" in parsed.netloc:
+            connect_args["ssl"] = True
+        
+        # Rebuild URL without query parameters to avoid asyncpg unexpected argument crashes
+        DATABASE_URL = urlunparse((
+            parsed.scheme,
+            parsed.netloc,
+            parsed.path,
+            parsed.params,
+            "",  # clear query parameters
+            parsed.fragment
+        ))
+    except Exception as e:
+        print(f"⚠️ Error parsing DATABASE_URL: {e}")
 
 def is_db_available(url: str) -> bool:
     try:
@@ -16,7 +36,7 @@ def is_db_available(url: str) -> bool:
         parsed = urlparse(clean_url)
         host = parsed.hostname or "localhost"
         port = parsed.port or 5432
-        s = socket.create_connection((host, port), timeout=0.5)
+        s = socket.create_connection((host, port), timeout=2.0)
         s.close()
         return True
     except Exception:
@@ -37,6 +57,7 @@ else:
         future=True,
         pool_size=10,
         max_overflow=20,
+        connect_args=connect_args,
     )
 
 # Async sessionmaker
