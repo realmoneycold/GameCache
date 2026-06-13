@@ -84,17 +84,21 @@ def format_dashboard(user_mention: str, telegram_id: int, total_orders: int, tot
     invested_display = f"{total_invested:,.0f}"
 
     return (
-        f"⚡️ <b>WELCOME TO THE VAULT, {user_mention}</b> ⚡️\n\n"
-        "Your secure session is encrypted and active.\n\n"
-        "┌── 📊 <b>SYSTEM CORE DATA</b> ──────────────────┐\n"
-        f"│  🏷️ RANK:      <code>{badge} {rank_name} (Tier {tier})</code>\n"
-        f"│  📦 PURCHASES: <code>{total_orders} Successful Dispatches</code>\n"
-        f"│  💰 INVESTED:  <code>{invested_display} UZS</code>\n"
-        "│  🪙 WALLET:    <code>Automated P2P Gateway</code>\n"
-        f"│  🛡️ PROFILE:   <code>Verified · #{telegram_id}</code>\n"
-        "└─── • 🛍️ ALL DIGITAL KEYS INSURED • ─────┘\n\n"
-        "🚀 All wholesale nodes are operational. Systems functional.\n\n"
-        "👇 Tap a terminal engine below to scan our catalog or query your vault:"
+        "🎮 <b>𝙂𝘼𝙈𝙀𝙃𝙐𝘽 | 𝙋𝙀𝙍𝙎𝙊𝙉𝘼𝙇 𝘿𝘼𝙎𝙃𝘽𝙊𝘼𝙍𝘿</b>\n\n"
+        f"Welcome back, Captain {user_mention}! 🚀\n"
+        "─────────────────────────\n"
+        "👤 <b>USER METRICS</b>\n"
+        "• Account Status: 🟢 ACTIVE\n"
+        f"• Loyalty Rank:   <b>{badge} {rank_name}</b>\n"
+        f"• User Reference:  <code>#{telegram_id}</code>\n\n"
+        "📊 <b>YOUR SHOPPING STATS</b>\n"
+        f"📦 Total Orders:    <b>{total_orders} Completed</b>\n"
+        f"💰 Total Invested:  <b>{invested_display} UZS</b>\n"
+        f"🔑 Keys Claimed:    <b>{total_orders} Digital Assets</b>\n\n"
+        "🔥 PROMO CODE ACTIVE: <code>[GAMEHUB2026]</code>\n"
+        "You are currently saving 2% on all JIT wholesale catalog orders!\n"
+        "─────────────────────────\n"
+        "👇 Select an action from the control console below:"
     )
 
 @router.message(CommandStart())
