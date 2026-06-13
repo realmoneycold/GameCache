@@ -15,6 +15,7 @@ def get_main_menu() -> InlineKeyboardMarkup:
     keyboard = [
         [InlineKeyboardButton(text="🔍 Scan Catalog", callback_data="btn_search")],
         [InlineKeyboardButton(text="📦 My Vault", callback_data="btn_orders")],
+        [InlineKeyboardButton(text="💳 Wallet", callback_data="btn_wallet")],
         [InlineKeyboardButton(text="💬 Support Terminal", callback_data="btn_support")]
     ]
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -175,4 +176,20 @@ async def orders_handler(callback: CallbackQuery):
             
     keyboard = [[InlineKeyboardButton(text="🔙 Back to Menu", callback_data="btn_menu")]]
     await callback.message.edit_text(msg, reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard))
+    await callback.answer()
+
+@router.callback_query(F.data == "btn_wallet")
+async def wallet_handler(callback: CallbackQuery):
+    wallet_text = (
+        "💳 <b>Wallet — Payment Gateway</b>\n\n"
+        "─────────────────────────\n"
+        "🪙 <b>Payment Method:</b> P2P Card Transfer\n"
+        "💱 <b>Currency:</b> UZS (Uzbekistani So'm)\n"
+        "⏱️ <b>Processing:</b> Instant (automated JIT)\n"
+        "─────────────────────────\n\n"
+        "To purchase a game key, search our catalog and select a product. "
+        "Our system will generate a unique invoice amount for your P2P transfer."
+    )
+    keyboard = [[InlineKeyboardButton(text="🔙 Back to Menu", callback_data="btn_menu")]]
+    await callback.message.edit_text(wallet_text, reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard))
     await callback.answer()
