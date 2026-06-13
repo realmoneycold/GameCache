@@ -92,7 +92,13 @@ async def lifespan(app: FastAPI):
     except Exception as lifespan_err:
         logging.critical("Lifespan startup encountered critical crash: %s", lifespan_err, exc_info=True)
         try:
-            await bot.send_message(chat_id=6438818927, text=f"🚨 CRITICAL ALERT: GameHub Core Engine crashed on startup!\nError: `{lifespan_err}`")
+            import html
+            err_msg = html.escape(str(lifespan_err))
+            await bot.send_message(
+                chat_id=6438818927, 
+                text=f"🚨 <b>CRITICAL ALERT</b>: GameHub Core Engine crashed on startup!\n\nError:\n<code>{err_msg}</code>",
+                parse_mode="HTML"
+            )
         except Exception as msg_err:
             logging.error("Failed to send crash notification: %s", msg_err)
         raise lifespan_err
