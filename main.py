@@ -34,13 +34,12 @@ async def lifespan(app: FastAPI):
         # Startup: Initialize database schemas and Redis connection pool
         print("[Lifespan] Initializing database and Redis connection pools...")
         
-        # If SQLite engine is active, auto-create tables
+        # Auto-create tables for the active database engine (SQLite or PostgreSQL)
         from database.db import engine
-        if "sqlite" in str(engine.url):
-            from database.models import Base
-            async with engine.begin() as conn:
-                await conn.run_sync(Base.metadata.create_all)
-            print("[Lifespan] SQLite database tables verified/created successfully.")
+        from database.models import Base
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("[Lifespan] Database tables verified/created successfully.")
             
         await redis_manager.connect()
         
